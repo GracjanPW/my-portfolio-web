@@ -1,3 +1,5 @@
+
+
 import type { Metadata } from "next";
 import { Orbitron } from "next/font/google";
 import "./globals.css";
@@ -24,6 +26,7 @@ export default function RootLayout({
       <body
         className={`${orbitron.variable} antialiased`}
       >
+
         {children}
       </body>
     </html>
