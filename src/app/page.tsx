@@ -1,12 +1,64 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TypeHead } from "@/components/type-head";
 import useTypeWriter from "@/hooks/use-type-writer";
+import useLineWriter from "@/hooks/use-line-writer";
+import { Tooltip } from "@/components/tooltip";
+
+const markdownLS = `
+about-me.txt education.txt experience.txt projects.txt contact.txt
+`;
+const markdownAboutMe = `
+About Me
+<br/>
+Hi, I'm Gracjan Wojciechowski  
+<br/>  
+I'm a fullstack developer based in the Uk. I specialize in building web applications and web services.
+<br/>
+My main tech stack includes React, Node.js, TypeScript, NextJS and PrismaORM. Im also familiar with Python to for backend development.  
+<br/> 
+I&apos;m currently looking for a full-time position as a software engineer. Feel free to contact me if you have any questions or if you would have a job offer for me.  
+<br/>
+`;
+const markdownEducation = `
+Education
+<br/>
+Loughborough University (2019 - 2023)
+BSc Computer Science
+<br/>
+Planstbrook School (2017 - 2019)
+A Levels
+- Mathematics
+- Physics
+- Computer Science
+<br/>
+`;
+const markdownExperience = `
+Experience
+<br/>
+Schooly (Apr 2024 - Oct 2024)
+Fullstack Developer Intern
+<br/>
+`;
+const markdownProjects = `
+Projects
+<br/>
+- [Portfolio](https://github.com/GracjanPW/my-portfolio-web)
+- [Calihub - Workout Planner](https://github.com/GracjanPW/calihub-app)
+- [Simple http server](https://github.com/GracjanPW/simlpe-http)
+`;
+const markdownContact = `
+Contact
+<br/>
+- [LinkedIn](https://www.linkedin.com/in/gracjan-wojciechowski-798647185/)
+- [Email](mailto:gracjanwojciechowski2002@gmail.com)
+- [GitHub](https://github.com/GracjanPW)
+`;
 
 export default function Home() {
   const bottomDiv = useRef<HTMLDivElement>(null);
-
+  const [showTooltip, setShowTooltip] = useState(true);
   const { displayedText, isFinished, progressTyping } = useTypeWriter("ls");
   const {
     displayedText: displayedText2,
@@ -33,36 +85,92 @@ export default function Home() {
     isFinished: isFinished6,
     progressTyping: progressTyping6,
   } = useTypeWriter("cat contact.txt");
+  const {
+    lines,
+    isFinished: isFinishedMarkdown,
+    progressTyping: progressMarkdown,
+  } = useLineWriter(markdownLS);
+  const {
+    lines: linesAboutMe,
+    isFinished: isFinishedMarkdownAboutMe,
+    progressTyping: progressMarkdownAboutMe,
+  } = useLineWriter(markdownAboutMe);
+  const {
+    lines: linesEducation,
+    isFinished: isFinishedMarkdownEducation,
+    progressTyping: progressMarkdownEducation,
+  } = useLineWriter(markdownEducation);
+  const {
+    lines: linesExperience,
+    isFinished: isFinishedMarkdownExperience,
+    progressTyping: progressMarkdownExperience,
+  } = useLineWriter(markdownExperience);
+  const {
+    lines: linesProjects,
+    isFinished: isFinishedMarkdownProjects,
+    progressTyping: progressMarkdownProjects,
+  } = useLineWriter(markdownProjects);
+  const {
+    lines: linesContact,
+    isFinished: isFinishedMarkdownContact,
+    progressTyping: progressMarkdownContact,
+  } = useLineWriter(markdownContact);
 
   useEffect(() => {
     const scrollDown = () => {
-      if (!isFinished) progressTyping("forward");
-      if (isFinished && !isFinished2) progressTyping2("forward");
-      if (isFinished2 && !isFinished3) progressTyping3("forward");
-      if (isFinished3 && !isFinished4) progressTyping4("forward");
-      if (isFinished4 && !isFinished5) progressTyping5("forward");
-      if (isFinished5 && !isFinished6) progressTyping6("forward");
-      if (isFinished5 && isFinished6) console.log("finished");
-    }
+      if (!isFinished) {
+        progressTyping("forward");
+        setShowTooltip(false);
+      }
+      if (isFinished && !isFinishedMarkdown) progressMarkdown("forward");
+      if (isFinishedMarkdown && !isFinished2) progressTyping2("forward");
+      if (isFinished2 && !isFinishedMarkdownAboutMe)
+        progressMarkdownAboutMe("forward");
+      if (isFinishedMarkdownAboutMe && !isFinished3) progressTyping3("forward");
+      if (isFinished3 && !isFinishedMarkdownEducation)
+        progressMarkdownEducation("forward");
+      if (isFinishedMarkdownEducation && !isFinished4)
+        progressTyping4("forward");
+      if (isFinished4 && !isFinishedMarkdownExperience)
+        progressMarkdownExperience("forward");
+      if (isFinishedMarkdownExperience && !isFinished5)
+        progressTyping5("forward");
+      if (isFinished5 && !isFinishedMarkdownProjects)
+        progressMarkdownProjects("forward");
+      if (isFinishedMarkdownProjects && !isFinished6)
+        progressTyping6("forward");
+      if (isFinished6 && !isFinishedMarkdownContact)
+        progressMarkdownContact("forward");
+    };
     const scrollUp = () => {
-      if (displayedText6 !== "") progressTyping6("backward");
+      if (linesContact.length > 0) progressMarkdownContact("backward");
+      else if (displayedText6 !== "") progressTyping6("backward");
+      else if (linesProjects.length > 0) progressMarkdownProjects("backward");
       else if (displayedText5 !== "") progressTyping5("backward");
+      else if (linesExperience.length > 0)
+        progressMarkdownExperience("backward");
       else if (displayedText4 !== "") progressTyping4("backward");
+      else if (linesEducation.length > 0) progressMarkdownEducation("backward");
       else if (displayedText3 !== "") progressTyping3("backward");
+      else if (linesAboutMe.length > 0) progressMarkdownAboutMe("backward");
       else if (displayedText2 !== "") progressTyping2("backward");
+      else if (lines.length > 0) progressMarkdown("backward");
       else if (displayedText !== "") progressTyping("backward");
-    }
-
+      else {
+        setShowTooltip(true);
+      }
+    };
 
     const handleScroll = (ev: WheelEvent) => {
       const direction_1 = ev.deltaY;
       if (direction_1 > 0) {
         scrollDown();
-        scrollDown();
       }
       if (direction_1 < 0) {
         scrollUp();
-        scrollUp();
+      }
+      if (bottomDiv.current) {
+        bottomDiv.current.scrollIntoView({ behavior: "smooth" });
       }
     };
 
@@ -70,16 +178,12 @@ export default function Home() {
     return () => {
       window.removeEventListener("wheel", handleScroll);
     };
-  }, [isFinished, progressTyping, progressTyping2]);
-
-  useEffect(() => {
-    if (bottomDiv.current) bottomDiv.current.scrollIntoView({ behavior: "smooth" });
-  } ,[isFinished, isFinished2, isFinished3, isFinished4, isFinished5, isFinished6, displayedText, displayedText2, displayedText3, displayedText4, displayedText5, displayedText6]);
-
+  });
 
   return (
     <div className="h-screen w-full overflow-hidden">
-      <div className="fixed top-0 left-0 h-screen w-full flex justify-center items-center">
+      {showTooltip && <Tooltip message="Scroll to see the content appear" />}
+      <div className="fixed top-0 left-0 h-screen w-full flex justify-center items-center p-10">
         <div className="relative min-w-[400px] w-[800px] min-h-[200px] h-[400px] rounded-md bg-black overflow-hidden shadow-gray-800 shadow-sm ">
           <div className="sticky top-0 w-full bg-stone-800 flex pt-2 pr-4 pl-0 justify-between">
             <div className="flex">
@@ -111,52 +215,28 @@ export default function Home() {
             </div>
             {isFinished && (
               <>
-                <div className="text-white flex space-x-2">
-                  <div className="text-gray-400 font-semibold">
-                    about-me.txt
-                  </div>
-                  <div className="text-gray-400 font-semibold">
-                    education.txt
-                  </div>
-                  <div className="text-gray-400 font-semibold">
-                    experience.txt
-                  </div>
-                  <div className="text-gray-400 font-semibold">
-                    projects.txt
-                  </div>
-                  <div className="text-gray-400 font-semibold">contact.txt</div>
+                <div className="text-gray-400">
+                  {lines.map((line, i) => (
+                    <div key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                  ))}
                 </div>
-                <div>
-                  c://gracjan-wojciechowski/portifolio{"> "}
-                  {displayedText2}
-                  <TypeHead active={!isFinished2} />
-                </div>
+                {isFinishedMarkdown && (
+                  <div>
+                    c://gracjan-wojciechowski/portifolio{"> "}
+                    {displayedText2}
+                    <TypeHead active={!isFinished2} />
+                  </div>
+                )}
               </>
             )}
             {isFinished2 && (
-              <div className="text-white">
-                <div className="text-gray-400">
-                  Hi, I&apos;m Gracjan Wojciechowski
-                </div>
-                <br />
-                <div className="text-gray-400">
-                  I&apos;m a fullstack developer based in the Uk. I specialize in
-                  building web applications and web services.
-                </div>
-                <br />
-                <div className="text-gray-400">
-                  My main tech stack includes React, Node.js, TypeScript, NextJS and PrismaORM.
-                  Im also familiar with Python to for backend development.
-                </div>
-                <br />
-                <div className="text-gray-400">
-                  I&apos;m currently looking for a full-time position as a software engineer. Feel free to contact me if you have any questions or 
-                  if you would have a job offer for me.
-                </div>
-                <br />
+              <div className="text-gray-400">
+                {linesAboutMe.map((line, i) => (
+                  <div key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                ))}
               </div>
             )}
-            {isFinished2 && (
+            {isFinishedMarkdownAboutMe && (
               <div>
                 c://gracjan-wojciechowski/portifolio{"> "}
                 {displayedText3}
@@ -164,33 +244,13 @@ export default function Home() {
               </div>
             )}
             {isFinished3 && (
-              <div className="text-white">
-                <div className="text-gray-400">Education</div>
-                <br />
-                <div className="text-gray-400">
-                  <ul>
-                    <li>
-                      <div>Loughborough University (2019 - 2023)</div>
-                      <div>BSc Computer Science</div>
-                    </li>
-                    <li>
-                      <br/> 
-                    </li>
-                    <li>
-                      <div>Planstbrook School (2017 - 2019)</div>
-                      <div>A Levels</div>
-                      <ul className="list-inside list-disc">
-                        <li>Mathematics</li>
-                        <li>Physics</li>
-                        <li>Computer Science</li>
-                      </ul>
-                    </li>
-
-                  </ul>
-                </div>
+              <div className="text-gray-400">
+                {linesEducation.map((line, i) => (
+                  <div key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                ))}
               </div>
             )}
-            {isFinished3 && (
+            {isFinishedMarkdownEducation && (
               <div>
                 c://gracjan-wojciechowski/portifolio{"> "}
                 {displayedText4}
@@ -198,76 +258,44 @@ export default function Home() {
               </div>
             )}
             {isFinished4 && (
-              <div className="text-white">
-                <div className="text-gray-400">Experience</div>
-                <div className="text-gray-400">
-                  <ul>
-                    <li>
-                      <div>Apr 2024 - Oct 2024</div>
-                      <div>Fullstack Developer Intern</div>
-                      <div>Schooly</div>
-                    </li>
-                  </ul>
-                </div>
+              <div className="text-gray-400">
+                {linesExperience.map((line, i) => (
+                  <div key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                ))}
               </div>
             )}
-          {
-            isFinished4 && (
+            {isFinishedMarkdownExperience && (
               <div>
                 c://gracjan-wojciechowski/portifolio{"> "}
                 {displayedText5}
                 <TypeHead active={!isFinished5} />
               </div>
-            )
-            
-          }
-          {
-            isFinished5 && (
-              <div className="text-white">
-                <div className="text-gray-400">Projects</div>
-                <div className="text-gray-400">
-                  - <a href="https://github.com/GracjanPW/my-portfolio-web">Portfolio</a> <br/>
-                  - <a href="https://github.com/GracjanPW/calihub-app">Calihub - Workout Planner</a> <br/>
-                  - <a href="https://github.com/GracjanPW/simlpe-http">Simple http server</a> <br/>
-                </div>
+            )}
+            {isFinished5 && (
+              <div className="text-gray-400">
+                {linesProjects.map((line, i) => (
+                  <div key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                ))}
               </div>
-            )
-          }
-          {
-            isFinished5 && (
+            )}
+            {isFinishedMarkdownProjects && (
               <div>
                 c://gracjan-wojciechowski/portifolio{"> "}
                 {displayedText6}
                 <TypeHead active={!isFinished6} />
               </div>
-            )
-          }
-          {
-            isFinished6 && (
-              <div className="text-white">
-                <div className="text-gray-400">Contact</div>
-                <div className="text-gray-400">
-                  - <a href="https://www.linkedin.com/in/gracjan-wojciechowski-798647185/">LinkedIn</a> <br/>
-                  - <a href="mailto:gracjanwojciechowski2002@gmail.com">Email</a> <br/>
-                  - <a href="https://github.com/GracjanPW">GitHub</a> <br/>
-                </div>
+            )}
+            {isFinished6 && (
+              <div className="text-gray-400">
+                {linesContact.map((line, i) => (
+                  <div key={i} dangerouslySetInnerHTML={{ __html: line }} />
+                ))}
               </div>
-            )
-          }
+            )}
           </div>
-          <div ref={bottomDiv}/>
+          <div ref={bottomDiv} />
         </div>
       </div>
     </div>
   );
 }
-// {isFinished && isFinished2 && isFinished3 && (
-//   <div className="text-white">
-//     <div className="text-gray-400">Projects</div>
-//     <div className="text-gray-400">
-//       - <a href="">Portfolio</a> <br/>
-//       - <a href="">Calihub - Workout Planner</a> <br/>
-//       - <a href="">Simple http server</a> <br/>
-//     </div>
-//   </div>
-// )}

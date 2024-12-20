@@ -34,3 +34,6 @@ body {
 a {
   @apply underline;
 }
+ul {
+  list-style-type: disc;
+}
